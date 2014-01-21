@@ -1,81 +1,35 @@
-const int button1 = 2;
+const int button1 = 2;         // push button wired to ground on one side and a 10K pull up resistor to 5v + line to pin on other
 
-const int TL = 9;
-const int ML = 8;
-const int BL = 7;
-const int MC = 6;
-const int TR = 12;
-const int MR = 11;
-const int BR = 10;
+const int group1 = 1 << 0;     // single LED with single 330 ohm resistor (orange, orange, brown)
+const int group2 = 1 << 1;     // two LEDs in series with single 100 ohm resistor (brown, black x3, brown)
+const int group3 = 1 << 2;     // same as group 2
+const int group4 = 1 << 3;     // same as group 2
 
-int lastButtonState = LOW;
+const int ledPatterns[] = { 0, // clear all
+  group1,                      // 1
+  group2,                      // 2
+  group1 | group2,             // 3
+  group2 | group3,             // 4
+  group1 | group2 | group3,    // 5
+  group2 | group3 | group4     // 6
+};
+
 int lastRoll = 0;
+int lastButtonState = LOW;
 
 void setup() {
   Serial.begin(9600);
   randomSeed(analogRead(0));
   pinMode(button1, INPUT);
-  pinMode(TL, OUTPUT);
-  pinMode(ML, OUTPUT);  
-  pinMode(BL, OUTPUT);
-  pinMode(MC, OUTPUT);
-  pinMode(TR, OUTPUT);
-  pinMode(MR, OUTPUT);
-  pinMode(BR, OUTPUT);
-}
-
-void clearDice() {
-  digitalWrite(TL, LOW);
-  digitalWrite(ML, LOW);
-  digitalWrite(BL, LOW);
-  digitalWrite(MC, LOW);
-  digitalWrite(TR, LOW);
-  digitalWrite(MR, LOW);
-  digitalWrite(BR, LOW);
-}
-
-void showValue(int diceValue) {
-  clearDice();
-
-  switch(diceValue) {
-  case 1:
-    digitalWrite(MC, HIGH);
-    break;
-  case 2:
-    digitalWrite(TL, HIGH);
-    digitalWrite(BR, HIGH);
-    break;
-  case 3:
-    digitalWrite(TL, HIGH);
-    digitalWrite(MC, HIGH);
-    digitalWrite(BR, HIGH);
-    break;
-  case 4:
-    digitalWrite(TL, HIGH);
-    digitalWrite(TR, HIGH);
-    digitalWrite(BL, HIGH);
-    digitalWrite(BR, HIGH);
-    break;
-  case 5:
-    digitalWrite(TL, HIGH);
-    digitalWrite(TR, HIGH);
-    digitalWrite(MC, HIGH);
-    digitalWrite(BL, HIGH);
-    digitalWrite(BR, HIGH);
-    break;
-  case 6:
-    digitalWrite(TL, HIGH);
-    digitalWrite(ML, HIGH);
-    digitalWrite(BL, HIGH);
-    digitalWrite(TR, HIGH);
-    digitalWrite(MR, HIGH);
-    digitalWrite(BR, HIGH);
-    break;
-  }
+  DDRB = group1 | group2 | group3 | group4; // set pins as outputs
 }
 
 int getNext() {
   return random(1, 7);
+}
+
+void showValue(int diceValue) {
+  PORTB = ledPatterns[diceValue];
 }
 
 const int animationLength = 4;
@@ -101,7 +55,6 @@ int animateNext() {
   return nextValue;
 }
 
-
 void loop() {
   int button1State = digitalRead(button1);
   if (button1State != lastButtonState) {
@@ -110,5 +63,4 @@ void loop() {
       lastRoll = animateNext();
     }
   }
-
 }
