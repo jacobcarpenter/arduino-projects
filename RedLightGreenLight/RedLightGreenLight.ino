@@ -1,6 +1,12 @@
 const int firstLight = 8;
 const int lightCount = 4;
 
+unsigned long timeLast = 0;
+int interval = 0;
+
+void clearAllLights();
+int getDelay();
+
 void setup() {
 	Serial.begin(9600);
 	randomSeed(analogRead(0));
@@ -10,13 +16,23 @@ void setup() {
 }
 
 void loop() {
-	int next = firstLight + random(0, 4);
+	unsigned long timeNow = millis();
+	if (timeNow - timeLast > interval) {
+		clearAllLights();
+		
+		int newLight = firstLight + random(0, 4);
+		digitalWrite(newLight, HIGH);
 
-	digitalWrite(next, HIGH);
-
-	int delayMultiplier = random(3, 6);
-	delay(500 * delayMultiplier);
-
-	digitalWrite(next, LOW);
+		timeLast = timeNow;
+		interval = getDelay();
+	}
 }
 
+void clearAllLights() {
+	PORTB &= ~0x0F;
+}
+
+int getDelay() {
+	const int delayIncrement = 500;
+	return random(3, 6) * delayIncrement;
+}
