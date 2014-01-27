@@ -57,7 +57,7 @@ void loop() {
 		case programRunning:
 			clearAllLights();
 			
-			int newLight = firstLight + random(0, 4);
+			int newLight = firstLight + random(0, lightCount);
 			digitalWrite(newLight, HIGH);
 
 			interval = getRandomDelay();
