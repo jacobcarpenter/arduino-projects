@@ -2,7 +2,6 @@
 
 const int anodes[] = { 3, 5, 9, 10 };
 const int cathodes[] = { 7, 4, 2 };
-const int cathodeCount = 3;
 
 unsigned long lastDelayChange = 0;
 int delayChangeInterval = 1700;
