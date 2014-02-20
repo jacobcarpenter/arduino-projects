@@ -18,7 +18,6 @@ int lastRoll = 0;
 int lastButtonState = LOW;
 
 void setup() {
-  Serial.begin(9600);
   randomSeed(analogRead(0));
   pinMode(button1, INPUT);
   DDRB = group1 | group2 | group3 | group4; // set pins as outputs
